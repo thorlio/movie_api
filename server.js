@@ -29,7 +29,7 @@ http.createServer((request, response) => {
         }
         response.writeHead(200, {'Content-Type': 'text/html'});
         response.write(data);
-        response.end();
+        response.end('Welcome to my book club!');
     });
 }).listen(8080);
 
