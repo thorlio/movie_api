@@ -4,14 +4,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "app": "^0.1.0",
     "body-parser": "^1.20.3",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "morgan": "^1.10.0"
   }
 }
