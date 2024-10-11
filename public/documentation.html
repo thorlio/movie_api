@@ -11,7 +11,7 @@
     <p>Backend server side of the movies application</p>
     </div>
 
-    <h3>Features</h3>
+    <h2>Features</h2>
     <div>
       <ul>
         <li>Return a list of ALL movies to the user</li>
@@ -25,5 +25,92 @@
         <li>Allow existing users to deregister</li>
       </ul>
     </div>
+
+    <h2>API Endpoints</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Business Logic</th>
+                <th>URL</th>
+                <th>HTTP Method</th>
+                <th>Request body data format</th>
+                <th>Response body data format</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!--Get all movies-->
+            <tr>
+                <td>Get All Movies</td>
+                <td>/movies</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>JSON of movie array</td>
+            </tr>
+            <!--Get movie by title--->
+            <tr>
+                <td>Get Movies by Movie Title</td>
+                <td>/movies/:Title</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>JSON obejct with movie</td>
+            </tr>
+            <!--Get movie by genre-->
+            <tr>
+                <td>Get Movies by Genre</td>
+                <td>/movies/genre/:genreName</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>JSON object with genre name</td>
+            </tr>
+            <!--Get movie by director name-->
+            <tr>
+                <td>Get Movies by Director's Name</td>
+                <td>/movies/directors/:directorsName</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>JSON object about director</td>
+            </tr>
+            <!--Create a new user-->
+            <tr>
+                <td>Create a New User</td>
+                <td>/users</td>
+                <td>POST</td>
+                <td>None</td>
+                <td>JSON object</td>
+            </tr>
+            <!--Update user name-->
+            <tr>
+                <td>Update a User Name</td>
+                <td>/users/:id</td>
+                <td>PUT</td>
+                <td>JSON object</td>
+                <td>Confirmation message</td>
+            </tr>
+            <!--Add movie to favorites-->
+            <tr>
+                <td>Add a Favorite Movie</td>
+                <td>/users/:id/:MovieTitle</td>
+                <td>POST</td>
+                <td>JSON object</td>
+                <td>Updated list</td>
+            </tr>
+            <!--Delete a user's favorite movie-->
+            <tr>
+                <td>Remove a Movie From Favorites</td>
+                <td>/users/:id/:movieTitle</td>
+                <td>DELETE</td>
+                <td>None</td>
+                <td>Message</td>
+            </tr>
+            <!--Deregister a user-->
+            <tr>
+                <td>Delete a User</td>
+                <td>/users/:id</td>
+                <td>DELETE</td>
+                <td>None</td>
+                <td>Confirmation</td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 </html>

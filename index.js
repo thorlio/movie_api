@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const uuid = require('uuid');
 
 const app = express();
 
@@ -18,6 +19,7 @@ let myLogger = (req, res, next) => {
 
 let movies = [
   {
+    id: 1,
     title: 'Shanghai Knights',
     director: {
       name: 'David Dobkin',
@@ -29,6 +31,7 @@ let movies = [
     year: '2003'
   },
   {
+    id: 2,
     title: 'Up',
     director: {
       name: 'Pete Docter',
@@ -39,7 +42,8 @@ let movies = [
     stars: 'Edward Asner, Jordan Nagai, John Ratzenberger',
     year: '2009'
   },
-  {
+  { 
+    id: 3,
     title: 'Twilight',
     director: {
       name: 'Stephanie Meyer',
@@ -51,85 +55,104 @@ let movies = [
     year: '2008'
   },
   {
+    id: 4,
     title: 'Step Up',
     director: {
-      director: 'Anne Fletcher',
+      name: 'Anne Fletcher',
       birth: 'May 1, 1966',
       death: 'Active'
     },
     genre: 'Crime, Drama, Music',
     stars: 'Channing Tatum, Jenna Dewan, Damaine Radcliff',
     year: '2006'
-  },
-  {
-    title: 'Knocked Up',
-    director: {
-      name: 'Judd Apatow',
-      birth: 'December 6, 1967',
-      death: 'Active'
-    },
-    genre: 'Romantic Comedy, Romance',
-    stars: 'Seth Rogen, Katherine Heigi, Paul Rudd',
-    year: '2007'
-  },
-  {
-    title: 'The Break-Up',
-    director: {
-      name: 'Peyton Reed',
-      birth: 'July 3, 1964',
-      death: 'Active'
-    },
-    genre: 'Drama, Romantic Comedy, Romance',
-    stars: 'Jennifer Aniston, Vince Vaughn, Jon Favreau',
-    year: '2006'
-  },
-  {
-    title: 'The Clean Up Crew',
-    director: {
-      name: 'Jon Keeyes',
-      birth: 'April 5, 1969',
-      death: 'Active'
-    },
-    genre: 'Action, Crime, Thriller',
-    stars: 'Jonathan Rhys Meyers, Swen Temmel, Ekaterina Baker',
-    year: '2024'
-  },
+  }
 ];
-
 
 app.use(myLogger);
 
 app.use('/documentation', express.static('public'));
 
-// Gets the list of data about ALL movies
+// Register - POST
+app.post('/movies', (req, res) => {
+  const newUser = req.body;
+
+  if (newUser.name) {
+      newUser.id = uuid.v4();
+      movies.push(newUser);
+      res.status(201).json(newUser)
+  } else {
+      res.status(400).send('Please enter a name')
+  }
+})
+
+// Update - PUT
+app.put('/movies/:id', (req, res) => {
+  const { id } = req.params;
+  const updatedUser = req.body;
+
+  let movie = movies.find( user => user.id == id);
+
+  if (movie) {
+      movie.name = updatedUser.name;
+      res.status(200.).json(user);
+  } else {
+      res.status(400).send('User not found')
+  }
+})
+
+app.post('/movies/:id/:title', (req, res) => {
+  const { id, title } = req.params;
+
+  let movie = movies.find( movie => movie.id == id);
+
+  if (movie) {
+      movie.favoriteMovies.push(title);
+      res.status(200).send(`${title} has been added to user ${id}'s array`);
+  } else {
+      res.status(400).send('User not found')
+  }
+})
+
+// Read - GET
 
 app.get('/movies', (req, res) => {
-  res.json(movies);
-});
-
-// Gets the data about a single movie, by title
+  res.status(200).json(movies);
+})
 
 app.get('/movies/:title', (req, res) => {
-  res.json(movies.find((movie) =>
-    { return movie.title === req.params.title }));
-});
+  res.json(movies.find((movie) => 
+  { return movie.title === req.params.title}));
 
-app.get('/movies/:title/:genre', (req, res) => {
-  res.json(movies.find((movies) =>
-  { return movies.genre === req.params.genre }));
-});
+  if (movie) {
+      res.status(200).json(movie);
+  } else {
+      res.status(400).send('No such movie')
+  }
+})
 
-app.get('/movies/:title/:directors bio', (req, res) => {
-  res.json(movies.find((movies) =>
-  { return movies.director === req.params.director }));
-});
+app.get('/movies/title/genre', (req, res) => {
+  res.json(movies.find((genre) => 
+  { return movie.genre === req.params.genre}));
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!')
-});
+  if (genre) {
+      res.status(200).json(genre);
+  } else {
+      res.status(400).send('No such genre')
+  }
+})
 
+app.get('/movies/directors/:directorName', (req, res) => {
+  const { directorName } = req.params;
+  const director = movies.find( movie => movie.director.Name === directorName).Director;
+
+  if (director) {
+      res.status(200).json(director);
+  } else {
+      res.status(400).send('No such director')
+  }
+})
+
+//listen for request
 app.listen(8080, () => {
-  console.log('Your app is listening on port 8080.');
+  console.log('Your app is listening on port 8080');
 });
-
