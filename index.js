@@ -132,7 +132,7 @@ app.put('/movies/director/:name/death', (req, res) => {
   const directorName = req.params.name;
   const deathDate = req.body.death;
 
-  let movie = movies.find((movie) => movie.director.name.toLocaleLowerCase() === directorName.toLowerCase());
+  let movie = movies.find((movie) => movie.director.name.toLowerCase() === directorName.toLowerCase());
 
   if (movie) {
     movie.director.death = deathDate;
