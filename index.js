@@ -90,13 +90,24 @@ app.get('/movies/:title', (req, res) => {
   }
 });
 
+app.get('/movies/:id', (req, res) => {
+  const movieId = parseInt(req.params.id); 
+  const movie = movies.find((movie) => movie.id === movieId); 
+
+  if (movie) {
+      res.json(movie); 
+  } else {
+      res.status(404).send('Movie not found'); 
+  }
+});
+
 //get genre of movies
 app.get('/movie/:genre', (req, res) => {
   const genre = req.params.genre.toLowerCase();
   const matchingMovies = movies.filter((movie) => movie.genre.toLowerCase().includes(genre));
 
   if (matchingMovies.length > 0) {
-    res.json(matchingMovies).send(`Successful GET request for movies of genre: ${req.params.genre}`);
+    res.json(matchingMovies);
   } else {
     res.status(404).send('No movies found in this genre');
   }
@@ -140,6 +151,11 @@ app.put('/movies/director/:name/death', (req, res) => {
   } else {
     res.status(404).send('Director not found');
   }
+});
+
+//get users
+app.get('/users', (req, res) => {
+  res.json(users);
 });
 
 //allow new users to register
