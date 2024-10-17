@@ -90,16 +90,6 @@ app.get('/movies/:title', (req, res) => {
   }
 });
 
-app.get('/movies/:id', (req, res) => {
-  const movieId = parseInt(req.params.id); 
-  const movie = movies.find((movie) => movie.id === movieId); 
-
-  if (movie) {
-      res.json(movie); 
-  } else {
-      res.status(404).send('Movie not found'); 
-  }
-});
 
 //get genre of movies
 app.get('/movie/:genre', (req, res) => {
