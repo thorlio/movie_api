@@ -81,12 +81,25 @@ app.get('/movies/', (req, res) => {
   res.json(movies).send('Successful GET request for data on all movies');
 });
 
-app.get('/movies/:title', (req, res) => {
-  const movie = movies.find((movie) => movie.title.toLowerCase() === req.params.title.toLowerCase());
-  if (movie) {
-    res.json(movie);
+app.get('/movies/:param', (req, res) => {
+  const param = req.params.param;
+
+  if(Number.isInteger(Number(param))) {
+    const movie = movies.find(m => m.id === parseInt(param));
+
+      if (movie) {
+        res.json(movie);
+      } else {
+        res.status(404).send('Movie not found');
+      }
   } else {
-    res.status(404).send('Movie not found');
+    const movie = movies.find(m => m.title.toLowerCase() === param.toLowerCase());
+
+    if (movie) {
+      res.json(movie);
+    } else {
+      res.status(404).send('Movie not found');
+    } 
   }
 });
 
