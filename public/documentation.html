@@ -5,6 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Movie API</title>
+    <style>
+        table {
+            width: 70%;
+            border-collapse: collapse; 
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 6px;
+            text-align: left;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,45 +45,68 @@
     <h2>Movies API Endpoints</h2>
     <table>
         <thead>
-            <tr>
-                <th>Request</th>
-                <th>URL</th>
+            <tr >
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
                 <th>Response</th>
             </tr>
         </thead>
         <tbody>
-            <!--Get all movies-->
-            <tr>
-                <td>Get All Movies</td>
-                <td>/movies</td>
-                <td>Returns a list of all movies</td>
-            </tr>
-            <!--Get movie by title--->
-            <tr>
+            <tr> <!-- Get movie by title -->
                 <td>GET</td>
                 <td>/movies/:title</td>
-                <td>Returns details of a movie by title</td>
+                <td></td>
+                <td>JSon with matching Movie</td>
             </tr>
-            <tr>
+            <tr> <!-- Get movie by genre query -->
+                <td>GET</td>
+                <td>/movies?genre=Action</td>
+                <td></td>
+                <td>Array of movies matching the genre</td>
+            </tr>
+            <!--Add a New Movie-->
+            <tr >
                 <td>POST</td>
                 <td>/movies</td>
-                <td>Adds a new movie</td>
+                <td>
+                    {
+                        "title": "New Movie",
+                        "director": "New Director",
+                        "genre": "Action",
+                        "dateReleased": "2024-01-15"
+                    }
+                </td>
+                <td>The new movie object</td>
             </tr>
+            <!--Update a movie by title--->
             <tr>
-                <td>DELETE</td>
-                <td>/movies/:id</td>
-                <td>Deletes a movie by ID</td>
-            </tr>
-            <!--Get movie by genre-->
-            <tr>
-                <td>GET</td>
-                <td>/movie/:genre</td>
-                <td>Returns movies that match a genre</td>
+                <td>PUT</td>
+                <td>/movies/:title</td>
+                <td>
+                    {
+                        "actors": ["Actor Name"]
+                    }
+                </td>
+                <td>Updated actor array</td>
             </tr>
             <tr>
                 <td>PUT</td>
-                <td>/movies/director/:name:death</td>
-                <td>Updates the death date of a director</td>
+                <td>/movies/:title</td>
+                <td>
+                    {
+                        "director": "Updated Director",
+                        "genre": "Thriller"
+                    }
+                </td>
+                <td>Updated movie object</td>
+            </tr>
+            <tr>
+                <!-- Remove a Movie by Title-->
+                <td>DELETE</td>
+                <td>/movies</td>
+                <td></td>
+                <td>A confirmation message</td>
             </tr>
         </tbody>
     </table>
@@ -77,16 +114,53 @@
     <table>
         <thead>
             <tr>
-                <th>Requests</th>
-                <th>URL</th>
+                <th>Method</th>
+                <th>Endpoint</th>
+                <th>Request Body</th>
                 <th>Response</th>
             </tr>
         </thead>
         <tbody>
             <tr>
+                <td>GET</td>
+                <td>/users</td>
+                <td></td>
+                <td>Array of user objects</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr>
                 <td>POST</td>
                 <td>/users</td>
-                <td>Registers a new user</td>
+                <td>
+                    {
+                        "Email": "sandy_thor@example.com",
+                        "Password": "password234",
+                        "Username": "sandy_thor"
+                    }
+                </td>
+                <td>The new user object</td>
+            </tr>
+        </tbody>
+        <tbody>
+            <tr> <!-- Update a user by email-->
+                <td>PUT</td>
+                <td>/users/:email</td>
+                <td>
+                    {
+                    "username": "Jane_Doe"
+                    }
+                </td>
+                <td>The updated user object</td>
+            </tr>
+        </tbody>
+        <!-- Remove a user by email -->
+        <tbody>
+            <tr> 
+                <td>DELETE</td>
+                <td>/users/:email</td>
+                <td></td>
+                <td>A confirmation message</td>
             </tr>
         </tbody>
     </table>
