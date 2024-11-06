@@ -8,6 +8,11 @@ const app = express();
 const Movies = Models.Movie;
 const Users = Models.User;
 
+let auth = require('./auth.js')(app);
+const passport = require('passport');
+require('./passport');
+
+
 
 
 mongoose.connect('mongodb://localhost:27017/myNewDatabase')
@@ -22,6 +27,7 @@ app.use(bodyParser.json());
 app.use(morgan('combined'));
 app.use(express.static('public'));
 app.use('/documentation', express.static('public'));
+app.use(bodyParser.urlencoded({ extended: true}));
 
 // Get all users
 app.get('/users', (req, res) => {
@@ -70,6 +76,31 @@ app.post('/users', async (req, res) => {
     });
 });
 
+// Update user by username
+app.put('/users/:Username', passport.authenticate('jwt', { session: false}),
+async (req, res) => {
+  if(req.user.Username !== req.params.Username) {
+    return res.status(400).send('Permission denied');
+  }
+  await Users.findOneAndUpdate({ Username: req.params.Username }, {
+    $set:
+    {
+      Username: req.body.Username,
+      Password: req.body.Password,
+      Email: req.body.Email,
+      Birthday: req.body.Birthday
+    }
+  },
+    { new: true })
+    .then((updatedUser) => {
+      res.json(updatedUser);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('Error: ' + err);
+    })
+});
+
 // Update user by email
 app.put('/users/:email', (req, res) => {
   Users.findOneAndUpdate(
@@ -88,10 +119,16 @@ app.delete('/users/:email', (req, res) => {
     .catch(err => res.status(400).json({ error: err.message }));
 });
 
-app.get('/movies', (req, res) => {
-  Movies.find() // Fetch all movies
-    .then(movies => res.status(200).json(movies))
-    .catch(err => res.status(500).json({ error: err.message }));
+app.get('/movies', passport.authenticate('jwt', { session: false }), 
+async (req, res) => {
+  await Movies.find() // Fetch all movies
+    .then((movies) => {
+      res.status(201).json(movies);
+    })
+    .catch(( error ) => {
+    console.log(error);
+    res.status(500).send( 'Error: ' + error);
+    });
 });
 
 //Get movie by genre query
