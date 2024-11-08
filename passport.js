@@ -1,12 +1,12 @@
-const passport = require('passport'),
-  LocalStrategy = require('passport-local').Strategy,
-  Models = require('./models.js'),
+const passport = require('passport');
+  LocalStrategy = require('passport-local').Strategy;
+  Models = require('./models.js');
   passportJWT = require('passport-jwt');
 
-let Users = Models.User,
+let Users = Models.User;
 
-  JWTStrategy = passportJWT.Strategy,
-  ExtractJWT = passportJWT.ExtractJwt;
+  JWTStrategy = require('passport-jwt').Strategy;
+  ExtractJWT = require('passport-jwt').ExtractJwt;
 
 passport.use(
   new LocalStrategy(
@@ -36,12 +36,17 @@ passport.use(
 
 passport.use(new JWTStrategy({
   jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-  secretOrKey: 'jwtSecret'
+  secretOrKey: 'your_jwt_secret'
 }, (jwtPayload, done) => {
   console.log("JWT Payload:", jwtPayload);
-  Users.findById(jwtPayload.id, (err, user) => {
-    if (err) return done(err, false);
-    if (user) return done(null, user);
-    return done(null, false);
-  });
-}));
+  Users.findById(jwtPayload.id)
+    .then(user => {
+      if (!user) {
+        return done(null, false);
+      }
+      return done(null, user);
+    })
+    .catch(err => done(err));
+  }));
+
+  module.exports = passport;

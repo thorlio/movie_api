@@ -12,16 +12,16 @@ let auth = require('./auth.js')(app);
 
 const passport = require('passport');
 require('./passport');
-const authenticate = (req, res, next) => {
-  passport.authenticate('jwt', { session: false },
-    (err, user, info) => {
-      if (err || !user) {
-        return res.status(401).json({ message: 'Unauthorized'});
-      }
-      req.user = user;
-      next();
-    })(req, res, next);
-};
+// const authenticate = (req, res, next) => {
+//   passport.authenticate('jwt', { session: false },
+//     (err, user, info) => {
+//       if (err || !user) {
+//         return res.status(401).json({ message: 'Unauthorized'});
+//       }
+//       req.user = user;
+//       next();
+//     })(req, res, next);
+// };
 
 
 
@@ -41,14 +41,14 @@ app.use('/documentation', express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
 // Get all users
-app.get('/users', authenticate, (req, res) => {
+app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.find()
     .then(users => res.status(200).json(users))
     .catch(err => res.status(500).json({ error: err.message }));
 });
 
 // Get user by username
-app.get('/users/:username', authenticate, (req, res) => {
+app.get('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOne({ username: req.params.username }) 
     .then(user => {
       if (user) {
@@ -61,7 +61,7 @@ app.get('/users/:username', authenticate, (req, res) => {
 });
 
 // Add new user
-app.post('/users', authenticate, async (req, res) => {
+app.post('/users', passport.authenticate('jwt', { session: false }), async (req, res) => {
   await Users.findOne({ Username: req.body.Username })
     .then((user) => {
       if (user) {
@@ -88,7 +88,7 @@ app.post('/users', authenticate, async (req, res) => {
 });
 
 // Update user by username
-app.put('/users/:Username', authenticate,
+app.put('/users/:Username', passport.authenticate('jwt', { session: false }), 
 async (req, res) => {
   if(req.user.Username !== req.params.Username) {
     return res.status(400).send('Permission denied');
@@ -113,7 +113,7 @@ async (req, res) => {
 });
 
 // Update user by email
-app.put('/users/:email', authenticate, (req, res) => {
+app.put('/users/:email', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndUpdate(
     { email: req.params.email },
     { $set: req.body },
@@ -124,13 +124,13 @@ app.put('/users/:email', authenticate, (req, res) => {
 });
 
 // Delete user by email
-app.delete('/users/:email', authenticate, (req, res) => {
+app.delete('/users/:email', passport.authenticate('jwt', { session: false }), (req, res) => {
   Users.findOneAndDelete({ email: req.params.email })
     .then(result => res.status(200).json({ message: "User deleted", result }))
     .catch(err => res.status(400).json({ error: err.message }));
 });
 
-app.get('/movies', authenticate, 
+app.get('/movies', passport.authenticate('jwt', { session: false }), 
 async (req, res) => {
   await Movies.find() // Fetch all movies
     .then((movies) => {
@@ -143,7 +143,7 @@ async (req, res) => {
 });
 
 // Get movie by title
-app.get('/movies/:title', authenticate, (req, res) => {
+app.get('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOne({ title: req.params.title })
     .then(movie => {
       if (movie) {
@@ -156,14 +156,14 @@ app.get('/movies/:title', authenticate, (req, res) => {
 });
 
 // Get movies by genre
-app.get('/movies/genre/:genre', authenticate, (req, res) => {
+app.get('/movies/genre/:genre', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.find({ genre: req.params.genre })
     .then(movies => res.status(200).json(movies))
     .catch(err => res.status(500).json({ error: err.message }));
 });
 
 // Add a new Movie
-app.post('/movies', authenticate, (req, res) => {
+app.post('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
   const newMovie = new Movies(req.body);
   newMovie.save()
     .then(movie => res.status(201).json(movie)) 
@@ -171,7 +171,7 @@ app.post('/movies', authenticate, (req, res) => {
 });
 
 // Update a Movie by Title
-app.put('/movies/:title', authenticate, (req, res) => {
+app.put('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOneAndUpdate(
     { title: req.params.title },
     { $set: req.body }, 
@@ -188,7 +188,7 @@ app.put('/movies/:title', authenticate, (req, res) => {
 });
 
 // Delete a movie by title
-app.delete('/movies/:title', authenticate, (req, res) => {
+app.delete('/movies/:title', passport.authenticate('jwt', { session: false }), (req, res) => {
   Movies.findOneAndRemove({ title: req.params.title })
     .then(result => res.status(200).json({ message: 'Movie deleted', result }))
     .catch(err => res.status(400).json({ error: err.message }));
