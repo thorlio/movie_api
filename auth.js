@@ -6,11 +6,11 @@ const jwt = require('jsonwebtoken'),
 require('./passport');
 
 let generateJWTToken = (user) => {
-  return jwt.sign(user, jwtSecret, {
-    subject: user.Username,
-    expiresIn: '7d',
-    algorithm: 'HS256'
-  });
+  return jwt.sign(
+    { id: user._id },
+    jwtSecret,
+    { subject: user.Username, expiresIn: '7d', algorithm: 'HS256'}
+  );
 }
 
 module.exports = (router) => {
@@ -24,7 +24,7 @@ module.exports = (router) => {
       }
       req.login(user, { session: false }, (error) => {
         if (error) {
-          res.send(error);
+          return res.send(error);
         }
         let token = generateJWTToken(user.toJSON());
         return res.json({ user, token});
