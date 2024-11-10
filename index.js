@@ -95,7 +95,7 @@ app.post('/users', async (req, res) => {
 });
 
 // Update user by username
-app.put('/users/:Username'),
+app.put('/users/:Username',
 async (req, res) => {
   if(req.user.Username !== req.params.Username) {
     return res.status(400).send('Permission denied');
@@ -108,6 +108,7 @@ async (req, res) => {
       Email: req.body.Email,
       Birthday: req.body.Birthday
     }
+  
   },
     { new: true })
     .then((updatedUser) => {
@@ -117,7 +118,7 @@ async (req, res) => {
       console.log(err);
       res.status(500).send('Error: ' + err);
     })
-};
+)};
 
 // Update user by email
 app.put('/users/:email', (req, res) => {
