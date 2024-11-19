@@ -1,16 +1,16 @@
 const jwtSecret = 'your_jwt_secret';
-
-const jwt = require('jsonwebtoken'),
-  passport = require('passport');
-
+const jwt = require('jsonwebtoken');
+const passport = require('passport');
 require('./passport');
 
 function generateJWTToken(user) {
-  return jwt.sign(
-    { _id: user._id,},
-    jwtSecret,
-    { subject: user.Username, expiresIn: '7d', algorithm: 'HS256'
-  });
+  const payload = {
+    _id: user._id,
+    Username: user.Username,
+    Email: user.Email,
+  };
+
+  return jwt.sign(payload, jwtSecret, { expiresIn: '7d', algorithm: 'HS256' });
 }
 
 module.exports = (router) => {
@@ -18,16 +18,17 @@ module.exports = (router) => {
     passport.authenticate('local', { session: false }, (error, user, info) => {
       if (error || !user) {
         return res.status(400).json({
-          message: info.message || 'Invalid username or password5',
-          user: user
+          message: 'Incorrect username or password',
+          user: user,
         });
       }
       req.login(user, { session: false }, (error) => {
         if (error) {
           res.send(error);
         }
-        const token = generateJWTToken(user.toJSON());
-        return res.json({ user, token});
+  
+        let token = generateJWTToken(user.toJSON());
+        return res.json({ user, token });
       });
     })(req, res);
   });
