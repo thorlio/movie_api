@@ -5,7 +5,7 @@ require('./passport');
 
 function generateJWTToken(user) {
   const payload = {
-    _id: user._id,
+    _id: user._id,      
     Username: user.Username,
     Email: user.Email,
   };
@@ -22,14 +22,16 @@ module.exports = (router) => {
           user: user,
         });
       }
+
       req.login(user, { session: false }, (error) => {
         if (error) {
-          res.send(error);
+          return res.send(error);
         }
-  
+
         let token = generateJWTToken(user.toJSON());
+
         return res.json({ user, token });
       });
     })(req, res);
   });
-}
+};

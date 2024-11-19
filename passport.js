@@ -22,23 +22,23 @@ let Users = Models.User,
           const user = await Users.findOne({ Username: username });
   
           if (!user) {
-            console.log(`Login failed: Username ${username} not found`);
-            return callback(null, false, { message: 'Invalid username or password. Please try again.' });
+            console.log('User not found');
+            return callback(null, false, { message: 'Incorrect username or password.' });
           }
   
-          // Check if password matches
+          // Check if password is correct
           const isValidPassword = await bcrypt.compare(password, user.Password);
   
           if (!isValidPassword) {
-            console.log(`Login failed: Incorrect password for ${username}`);
-            return callback(null, false, { message: 'Invalid username or password. Please try again.' });
+            console.log('Incorrect password');
+            return callback(null, false, { message: 'Incorrect username or password.' });
           }
   
-          console.log(`Login successful for username: ${username}`);
+          console.log('Login successful for user:', username);
           return callback(null, user);
         } catch (error) {
-          console.log(`Error during authentication for username ${username}:`, error);
-          return callback(error);
+          console.error('Error during authentication:', error);
+          return callback(null, false, { message: 'An error occurred during authentication. Please try again later.' });
         }
       }
     )
@@ -52,19 +52,18 @@ let Users = Models.User,
       },
       async (jwtPayload, callback) => {
         try {
-          // Find the user by the ID encoded in the JWT
           const user = await Users.findById(jwtPayload._id);
   
           if (!user) {
-            console.log(`JWT authentication failed: User not found for ID ${jwtPayload._id}`);
+            console.log('User not found for the provided token');
             return callback(null, false, { message: 'User not found. Please login again.' });
           }
   
-          console.log(`JWT authentication successful for user ID: ${jwtPayload._id}`);
+          console.log('JWT authentication successful for user:', user.Username);
           return callback(null, user);
         } catch (error) {
-          console.log(`Error during JWT authentication:`, error);
-          return callback(error);
+          console.error('Error during JWT authentication:', error);
+          return callback(null, false, { message: 'An error occurred during JWT authentication. Please try again later.' });
         }
       }
     )
