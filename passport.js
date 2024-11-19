@@ -23,7 +23,7 @@ let Users = Models.User,
   
           if (!user) {
             console.log('User not found');
-            return callback(null, false, { message: 'Incorrect username or password.' });
+            return callback(null, false, { message: 'Incorrect username.' });
           }
   
           // Check if password is correct
@@ -31,7 +31,7 @@ let Users = Models.User,
   
           if (!isValidPassword) {
             console.log('Incorrect password');
-            return callback(null, false, { message: 'Incorrect username or password.' });
+            return callback(null, false, { message: 'Incorrect password.' });
           }
   
           console.log('Login successful for user:', username);
