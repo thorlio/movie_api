@@ -1,32 +1,48 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const uuid = require('uuid');
 const mongoose = require('mongoose');
 const Models = require('./models.js');
+const cors = require('cors');
+const { check, validationResult } = require('express-validator');
+const passport = require('passport');
+const bcrypt = require('bcrypt');
+
+const { generateJWTToken } = require('./auth');
 const app = express();
 const Movies = Models.Movie;
 const Users = Models.User;
 
-let auth = require('./auth.js')(app);
-const passport = require('passport');
-require('./passport');
-
+// Database connection
 mongoose.connect('mongodb://localhost:27017/myNewDatabase')
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((err) => { 
-    console.log('Could not connect to MongoDB:', err);
-  });
+.then(() => {
+  console.log('Connected to MongoDB');
+})
+.catch((err) => { 
+  console.log('Could not connect to MongoDB:', err);
+});
 
-app.use(bodyParser.json());
+// Middleware
+
+app.use(cors());
 app.use(morgan('combined'));
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true}));
 app.use(express.static('public'));
 app.use('/documentation', express.static('public'));
-app.use(bodyParser.urlencoded({ extended: true}));
-app.use(express.json());
+
+// Passport and authentication middleware
+require('./passport');
 app.use(passport.initialize());
+
+// Global JWT authentication middleware 
+app.use((req, res, next) => {
+  const nonAuthRoutes = ['/login', '/register']; 
+  if (nonAuthRoutes.includes(req.path)) {
+    return next(); 
+  }
+  passport.authenticate('jwt', { session: false })(req, res, next);
+});
 
 // Get all users
 app.get('/users', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -49,46 +65,63 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
 });
 
 // Add new user
-app.post('/users', passport.authenticate('jwt', { session: false }), async(req, res) => {
-  await Users.findOne({ Username: req.body.Username })
-    .then((user) => {
-      if (user) {
-        return res.status(400).send(req.body.Username + 'already exists');
-      } else {
-        Users
-          .create({
+app.post(
+  "/users",
+    async (req, res) => {
+    await Users.findOne({ Username: req.body.Username })
+      .then((user /*this can be any variable "foundUser", "result", etc*/) => {
+        if (user) {
+          return res.status(400).send(req.body.Username + "already exists");
+        } else {
+          Users.create({
             Username: req.body.Username,
             Password: req.body.Password,
             Email: req.body.Email,
-            Birthday: req.body.Birthday
+            Birthday: req.body.Birthday,
           })
-          .then((user) =>{res.status(201).json(user) })
-        .catch((error) => {
-          console.error(error);
-          res.status(500).send('Error: ' + error);
-        })
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      res.status(500).send('Error: ' + error);
-    });
-});
+            .then((user) => {
+              res.status(201).json(user);
+            })
+            .catch((error) => {
+              console.error(error);
+              res.status(500).send("Error: " + error);
+            });
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send("Error: " + error);
+      });
+  }
+);
 
-app.post('/login', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.post("/login", async (req, res) => {
+  console.log("Request body:", req.body); // Debug log
+
   const { Username, Password } = req.body;
-
-  const user = await Users.findOne({ Username });
-  if (!user) {
-      return res.status(401).send('User not found');
+  
+  if (!Username || !Password) {
+    return res.status(400).send("Username and Password are required");
   }
 
-  const isValidPassword = await bcrypt.compare(Password, user.Password);
-  if (!isValidPassword) {
-      return res.status(401).send('Incorrect password');
-  }
+  try {
+    const user = await Users.findOne({ Username });
+    if (!user) {
+      console.log(`User not found: ${Username}`);
+      return res.status(401).send("Username not found");
+    }
 
-  return res.status(200).send('Login successful');
+    const isValidPassword = await bcrypt.compare(Password, user.Password);
+    if (!isValidPassword) {
+      return res.status(401).send("Incorrect password");
+    }
+
+    const token = generateJWTToken(user);
+    return res.status(200).json({ token });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).send("An error occurred");
+  }
 });
 
 // Update user by username
@@ -166,13 +199,6 @@ async (req, res) => {
     console.log(error);
     res.status(500).send( 'Error: ' + error);
     });
-});
-
-//Get movie by genre query
-app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Movies.find({ genre: req.query.genre })
-    .then(movies => res.status(200).json(movies))
-    .catch(err => res.status(500).json({ error: err.message }));
 });
 
 // Get movie by title
