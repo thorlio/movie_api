@@ -12,7 +12,7 @@ const { generateJWTToken } = require('./auth');
 const app = express();
 const Movies = Models.Movie;
 const Users = Models.User;
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 // Database connection
 mongoose.connect('mongodb://localhost:27017/myNewDatabase')
@@ -311,8 +311,12 @@ app.delete('/movies/:title', passport.authenticate('jwt', { session: false }), (
 });
 
 // Start the server
-app.listen(port, () => {
-  console.log(`Your app is listening on port {port}`);
+// app.listen(port, () => {
+//   console.log(`Your app is listening on port {port}`);
+// });
+
+app.listen(port, '0.0.0.0', () => {
+  console.log('Listening on Port ' + port);
 });
 
 
