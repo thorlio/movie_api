@@ -81,6 +81,8 @@ app.use((req, res, next) => {
   passport.authenticate('jwt', { session: false })(req, res, next);
 });
 
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Get all users
 app.get('/users', (req, res, next) => {
   console.log('Authorization Header:', req.headers.authorization);
