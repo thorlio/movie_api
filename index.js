@@ -49,10 +49,13 @@ app.use(passport.initialize());
 
 // Global JWT authentication middleware 
 app.use((req, res, next) => {
-  const nonAuthRoutes = ['/login', '/register', '/favicon.ico', '/', 'users']; 
+  const nonAuthRoutes = ['/login', '/register', '/favicon.ico', '/', '/users'];
+  console.log(`Checking path: ${req.path}, method: ${req.method}`);
   if (nonAuthRoutes.includes(req.path) && req.method === 'POST') {
-    return next(); 
+    console.log(`Skipping authentication for ${req.path}`);
+    return next();
   }
+  console.log(`Enforcing authentication for ${req.path}`);
   passport.authenticate('jwt', { session: false })(req, res, next);
 });
 
