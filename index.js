@@ -49,7 +49,7 @@ app.use(passport.initialize());
 
 // Global JWT authentication middleware 
 app.use((req, res, next) => {
-  const nonAuthRoutes = ['/login', '/register', '/STfavicon.ico', '/']; 
+  const nonAuthRoutes = ['/login', '/register', '/STfavicon.ico', '/', 'users']; 
   if (nonAuthRoutes.includes(req.path)) {
     return next(); 
   }
