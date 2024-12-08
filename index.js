@@ -13,6 +13,8 @@ const app = express();
 const Movies = Models.Movie;
 const Users = Models.User;
 const port = process.env.PORT || 8080;
+const favicon = require('serve-favicon');
+const path = require('path');
 
 // Database connection
 // mongoose.connect('mongodb://localhost:27017/myNewDatabase')
@@ -31,34 +33,6 @@ mongoose.connect('mongodb+srv://thorlio3:PUXWVUhLT85ew3Pi@cluster0.1sglm.mongodb
   console.log('Could not connect to MongoDB:', err);
 });
 
-
-// const { MongoClient, ServerApiVersion } = require('mongodb');
-// const uri = "mongodb+srv://thorlio3:<db_password>@cluster0.1sglm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-// const client = new MongoClient(uri, {
-//   serverApi: {
-//     version: ServerApiVersion.v1,
-//     strict: true,
-//     deprecationErrors: true,
-//   }
-// });
-
-// async function run() {
-//   try {
-//     // Connect the client to the server	(optional starting in v4.7)
-//     await client.connect();
-//     // Send a ping to confirm a successful connection
-//     await client.db("admin").command({ ping: 1 });
-//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     await client.close();
-//   }
-// }
-// run().catch(console.dir);
-
-
 // Middleware
 
 app.use(cors());
@@ -67,6 +41,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(express.static('public'));
 app.use('/documentation', express.static('public'));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // Passport and authentication middleware
 require('./passport');
@@ -74,14 +49,16 @@ app.use(passport.initialize());
 
 // Global JWT authentication middleware 
 app.use((req, res, next) => {
-  const nonAuthRoutes = ['/login', '/register']; 
+  const nonAuthRoutes = ['/login', '/register', '/favicon.ico']; 
   if (nonAuthRoutes.includes(req.path)) {
     return next(); 
   }
   passport.authenticate('jwt', { session: false })(req, res, next);
 });
 
-app.get('/favicon.ico', (req, res) => res.status(204).end());
+app.get('/', (req, res) => {
+  res.send('Welcome to the app!');
+});
 
 // Get all users
 app.get('/users', (req, res, next) => {
@@ -109,15 +86,10 @@ app.get('/users/:username', passport.authenticate('jwt', { session: false }), (r
 // Add new user
 app.post('/users',
   [
-  check('Username', /*validates the Username sent by the user*/
-    'Username is required ') /*this is the error message if username is missing*/
-    .isLength({min: 5}), /*ensures length is 5 characters long*/
-  check('Username', 
-    'Username contains non alphanumeric characters - not allowed.')
-    .isAlphanumeric(), /* ensures the username is only has letters*/
-  check('Password', 'Password is required').not().isEmpty(), /*ensures pw isn't empty*/
-  check('Email', 'Email does not appear to be valid')
-  .isEmail() /*ensures email looks valid*/
+  check('Username', 'Username is required ').isLength({min: 5}),
+  check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+  check('Password', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be valid').isEmail()
    ], async (req, res) => {
     //check the validation object for errors
     let errors = validationResult(req); /*checks the data the user sent (req)*/
