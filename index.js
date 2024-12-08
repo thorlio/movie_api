@@ -49,9 +49,9 @@ app.use(passport.initialize());
 
 // Global JWT authentication middleware 
 app.use((req, res, next) => {
-  const nonAuthRoutes = ['/login', '/register', '/favicon.ico', '/', '/users'];
+  const nonAuthRoutes = ['/login', '/register', '/favicon.ico', '/users', '/'];
   console.log(`Checking path: ${req.path}, method: ${req.method}`);
-  if (nonAuthRoutes.includes(req.path) && req.method === 'POST') {
+  if (nonAuthRoutes.includes(req.path) && req.method === 'GET') {
     console.log(`Skipping authentication for ${req.path}`);
     return next();
   }
@@ -122,36 +122,6 @@ app.post('/users',
     });
 });
 
-
-// app.post(
-//   "/users",
-//     async (req, res) => {
-//     await Users.findOne({ Username: req.body.Username })
-//       .then((user /*this can be any variable "foundUser", "result", etc*/) => {
-//         if (user) {
-//           return res.status(400).send(req.body.Username + "already exists");
-//         } else {
-//           Users.create({
-//             Username: req.body.Username,
-//             Password: req.body.Password,
-//             Email: req.body.Email,
-//             Birthday: req.body.Birthday,
-//           })
-//             .then((user) => {
-//               res.status(201).json(user);
-//             })
-//             .catch((error) => {
-//               console.error(error);
-//               res.status(500).send("Error: " + error);
-//             });
-//         }
-//       })
-//       .catch((error) => {
-//         console.error(error);
-//         res.status(500).send("Error: " + error);
-//       });
-//   }
-// );
 
 app.post("/login", [
   check('Username', 'Username is required and must be at least 5 characters long').isLength({ min: 5}),
