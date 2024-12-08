@@ -41,7 +41,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(express.static('public'));
 app.use('/documentation', express.static('public'));
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico', '/')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // Passport and authentication middleware
 require('./passport');
@@ -49,7 +49,7 @@ app.use(passport.initialize());
 
 // Global JWT authentication middleware 
 app.use((req, res, next) => {
-  const nonAuthRoutes = ['/login', '/register', '/STfavicon.ico']; 
+  const nonAuthRoutes = ['/login', '/register', '/STfavicon.ico', '/']; 
   if (nonAuthRoutes.includes(req.path)) {
     return next(); 
   }
