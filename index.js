@@ -9,6 +9,7 @@ const Users = Models.User;
 const cors = require("cors");
 const passport = require("passport");
 const { check, validationResult } = require("express-validator");
+const port = process.env.PORT || 8080;
 
 mongoose
   .connect("mongodb://localhost:27017/myNewDatabase")
@@ -222,6 +223,6 @@ app.delete(
 );
 
 // Start the server
-app.listen(8080, () => {
-  console.log("Your app is listening on port 8080");
+app.listen(port, "0.0.0.0", () => {
+  console.log("Listening on Port " + port);
 });
