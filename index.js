@@ -16,10 +16,17 @@ const port = process.env.PORT || 8080;
 //   useUnifiedTopology: true,
 // });
 
-mongoose.connect(process.env.CONNECTION_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose
+  .connect(CONNECTION_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB!");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,6 +38,10 @@ app.use(cors());
 let auth = require("./auth.js")(app);
 
 require("./passport.js");
+
+app.get("/", (req, res) => {
+  res.status(200).send("Welcome to Flix and Chill App!");
+});
 
 // Get all users
 app.get(
