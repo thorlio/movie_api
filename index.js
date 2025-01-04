@@ -11,14 +11,15 @@ const passport = require("passport");
 const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
 
-mongoose
-  .connect("mongodb://localhost:27017/myNewDatabase")
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.log("Could not connect to MongoDB:", err);
-  });
+// mongoose.connect("mongodb://localhost:27017/myNewDatabase", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+mongoose.connect(process.env.CONNECTION_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
