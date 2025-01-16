@@ -28,13 +28,29 @@ mongoose
     console.error("MongoDB connection error:", err);
   });
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://flixandchill-frontend.netlify.app",
+];
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("combined"));
 app.use(express.static("public"));
 app.use("/documentation", express.static("public"));
-
-app.use(cors());
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log("Request Origin:", origin); // Log the origin for debugging
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.error("Blocked by CORS:", origin); // Log blocked origins
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 let auth = require("./auth.js")(app);
 
 require("./passport.js");
@@ -147,13 +163,6 @@ app.put(
       });
   }
 );
-
-// Delete user by userame and password
-// app.delete("/users/:email", (req, res) => {
-//   Users.findOneAndDelete({ email: req.params.email })
-//     .then((result) => res.status(200).json({ message: "User deleted", result }))
-//     .catch((err) => res.status(400).json({ error: err.message }));
-// });
 
 //Get all movies
 app.get("/movies", async (req, res) => {
