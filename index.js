@@ -17,7 +17,7 @@ const port = process.env.PORT || 8080;
 // });
 
 mongoose
-  .connect(process.env.CONNECTION_URI, {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
