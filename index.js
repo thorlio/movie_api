@@ -10,6 +10,7 @@ const cors = require("cors");
 const passport = require("passport");
 const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
+const jwt = require("jsonwebtoken");
 
 // mongoose.connect("mongodb://localhost:27017/myNewDatabase", {
 //   useNewUrlParser: true,
@@ -59,6 +60,40 @@ require("./passport.js");
 
 app.get("/", (req, res) => {
   res.status(200).send("Welcome to Flix and Chill App!");
+});
+
+app.post("/login", async (req, res) => {
+  const { Username, Password } = req.body;
+
+  try {
+    const user = await Users.findOne({ Username });
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    const isValidPassword = await user.validatePassword(Password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ Username: user.Username }, "your_jwt_secret", {
+      expiresIn: "7days",
+    });
+
+    // Return the user and token
+    res.status(200).json({
+      user: {
+        Username: user.Username,
+        Email: user.Email,
+        Birthday: user.Birthday,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error("Login error: ", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // Get all users
