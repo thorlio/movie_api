@@ -40,17 +40,19 @@ app.use(express.static("public"));
 app.use("/documentation", express.static("public"));
 app.use(
   cors({
-    origin: function (origin, callback) {
-      console.log("Request Origin:", origin); // Log the origin for debugging
+    origin: (origin, callback) => {
+      console.log("Request Origin:", origin);
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        console.error("Blocked by CORS:", origin); // Log blocked origins
+        console.error("Blocked by CORS:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
+    credentials: true,
   })
 );
+
 let auth = require("./auth.js")(app);
 
 require("./passport.js");
@@ -238,6 +240,14 @@ app.delete(
       .catch((err) => res.status(400).json({ error: err.message }));
   }
 );
+
+const path = require("path");
+
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 // Start the server
 app.listen(port, "0.0.0.0", () => {

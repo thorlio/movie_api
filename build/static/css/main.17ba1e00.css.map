@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.17ba1e00.css","mappings":"AAEA,SACE,aAHM","sources":["index.scss"],"sourcesContent":["$color: steelblue;\r\n\r\n.my-flix {\r\n  color: $color;\r\n}"],"names":[],"sourceRoot":""}
