@@ -198,47 +198,6 @@ app.get(
 //   }
 // );
 
-app.post(
-  "/users",
-  [
-    check("Username", "Username is required").isLength({ min: 5 }),
-    check(
-      "Username",
-      "Username contains non alphanumeric characters - not allowed."
-    ).isAlphanumeric(),
-    check("Password", "Password is required").not().isEmpty(),
-    check("Email", "Email does not appear to be valid").isEmail(),
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-
-    try {
-      const existingUser = await Users.findOne({ Username: req.body.Username });
-
-      if (existingUser) {
-        return res.status(400).send(`${req.body.Username} already exists`);
-      }
-
-      const hashedPassword = Users.hashPassword(req.body.Password);
-      const newUser = await Users.create({
-        Username: req.body.Username,
-        Password: hashedPassword,
-        Email: req.body.Email,
-        Birthday: req.body.Birthday,
-      });
-
-      return res.status(201).json(newUser);
-    } catch (error) {
-      console.error("Error creating user:", error);
-      return res.status(500).send("Error: " + error.message);
-    }
-  }
-);
-
 app.put(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
