@@ -18,39 +18,39 @@ const jwt = require("jsonwebtoken");
 //   useUnifiedTopology: true,
 // });
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
-// const uri =
-//   "mongodb+srv://thorlio3:Sacramento%408@cluster0.1sglm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// const { MongoClient, ServerApiVersion } = require("mongodb");
+// // const uri =
+// //   "mongodb+srv://thorlio3:Sacramento%408@cluster0.1sglm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(process.env.MONGODB_URI, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
+// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(process.env.MONGODB_URI, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   },
+// });
 
-async function run() {
-  try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+// async function run() {
+//   try {
+//     // Connect the client to the server	(optional starting in v4.7)
+//     await client.connect();
+//     // Send a ping to confirm a successful connection
+//     await client.db("admin").command({ ping: 1 });
+//     console.log(
+//       "Pinged your deployment. You successfully connected to MongoDB!"
+//     );
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     await client.close();
+//   }
+// }
+// run().catch(console.dir);
 
-// mongoose
-//   .connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 30000 })
-//   .then(() => console.log("Connected to MongoDB!"))
-//   .catch((err) => console.error("MongoDB connection error:", err));
+mongoose
+  .connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 30000 })
+  .then(() => console.log("Connected to MongoDB!"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -101,10 +101,9 @@ app.post("/login", async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign({ Username: user.Username }, "your_jwt_secret", {
-      expiresIn: "7days",
+      expiresIn: "7d",
     });
 
-    // Return the user and token
     res.status(200).json({
       user: {
         Username: user.Username,
@@ -124,9 +123,12 @@ app.get(
   "/users",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    await Users.find()
-      .then((users) => res.status(200).json(users))
-      .catch((err) => res.status(500).json({ error: err.message }));
+    try {
+      const users = await Users.find();
+      res.status(200).json(users);
+    } catch (err) {
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 );
 
@@ -135,7 +137,7 @@ app.get(
   "/users/:username",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    await Users.findOne({ username: req.params.username })
+    await Users.findOne({ Username: req.params.username })
       .then((user) => {
         if (user) {
           res.status(200).json(user);
