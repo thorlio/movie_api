@@ -52,6 +52,8 @@ mongoose
   .then(() => console.log("Connected to MongoDB!"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+mongoose.set("debug", true);
+
 const allowedOrigins = [
   "http://localhost:3000",
   "https://flixandchill-frontend.netlify.app",
@@ -150,6 +152,52 @@ app.get(
 );
 
 // Add new user
+// app.post(
+//   "/users",
+//   [
+//     check("Username", "Username is required").isLength({ min: 5 }),
+//     check(
+//       "Username",
+//       "Username contains non alphanumeric characters - not allowed."
+//     ).isAlphanumeric(),
+//     check("Password", "Password is required").not().isEmpty(),
+//     check("Email", "Email does not appeare to be valid").isEmail(),
+//   ],
+//   async (req, res) => {
+//     let errors = validationResult(req);
+
+//     if (!errors.isEmpty()) {
+//       return res.status(422).json({ errors: errors.array() });
+//     }
+
+//     let hashedPassword = Users.hashPassword(req.body.Password);
+//     await Users.findOne({ Username: req.body.Username })
+//       .then((user) => {
+//         if (user) {
+//           return res.status(400).send(req.body.Username + "already exists");
+//         } else {
+//           Users.create({
+//             Username: req.body.Username,
+//             Password: hashedPassword,
+//             Email: req.body.Email,
+//             Birthday: req.body.Birthday,
+//           })
+//             .then((user) => {
+//               res.status(201).json(user);
+//             })
+//             .catch((error) => {
+//               console.error(error);
+//               res.status(500).send("Error: " + error);
+//             });
+//         }
+//       })
+//       .catch((error) => {
+//         console.error(error);
+//         res.status(500).send("Error: " + error);
+//       });
+//   }
+// );
+
 app.post(
   "/users",
   [
@@ -159,40 +207,35 @@ app.post(
       "Username contains non alphanumeric characters - not allowed."
     ).isAlphanumeric(),
     check("Password", "Password is required").not().isEmpty(),
-    check("Email", "Email does not appeare to be valid").isEmail(),
+    check("Email", "Email does not appear to be valid").isEmail(),
   ],
   async (req, res) => {
-    let errors = validationResult(req);
+    const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    let hashedPassword = Users.hashPassword(req.body.Password);
-    await Users.findOne({ Username: req.body.Username })
-      .then((user) => {
-        if (user) {
-          return res.status(400).send(req.body.Username + "already exists");
-        } else {
-          Users.create({
-            Username: req.body.Username,
-            Password: hashedPassword,
-            Email: req.body.Email,
-            Birthday: req.body.Birthday,
-          })
-            .then((user) => {
-              res.status(201).json(user);
-            })
-            .catch((error) => {
-              console.error(error);
-              res.status(500).send("Error: " + error);
-            });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send("Error: " + error);
+    try {
+      const existingUser = await Users.findOne({ Username: req.body.Username });
+
+      if (existingUser) {
+        return res.status(400).send(`${req.body.Username} already exists`);
+      }
+
+      const hashedPassword = Users.hashPassword(req.body.Password);
+      const newUser = await Users.create({
+        Username: req.body.Username,
+        Password: hashedPassword,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday,
       });
+
+      return res.status(201).json(newUser);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      return res.status(500).send("Error: " + error.message);
+    }
   }
 );
 
