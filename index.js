@@ -13,10 +13,10 @@ const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
 const jwt = require("jsonwebtoken");
 
-mongoose.connect("mongodb://localhost:27017/myNewDatabase", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+// mongoose.connect("mongodb://localhost:27017/myNewDatabase", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
 // const uri =
