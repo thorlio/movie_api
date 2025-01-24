@@ -13,46 +13,46 @@ const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
 const jwt = require("jsonwebtoken");
 
-// mongoose.connect("mongodb://localhost:27017/myNewDatabase", {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
+mongoose.connect("mongodb://localhost:27017/myNewDatabase", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-// const { MongoClient, ServerApiVersion } = require("mongodb");
-// // const uri =
-// //   "mongodb+srv://thorlio3:Sacramento%408@cluster0.1sglm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const { MongoClient, ServerApiVersion } = require("mongodb");
+// const uri =
+//   "mongodb+srv://thorlio3:Sacramento%408@cluster0.1sglm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
-// const client = new MongoClient(process.env.MONGODB_URI, {
-//   serverApi: {
-//     version: ServerApiVersion.v1,
-//     strict: true,
-//     deprecationErrors: true,
-//   },
-// });
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(process.env.MONGODB_URI, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+});
 
-// async function run() {
-//   try {
-//     // Connect the client to the server	(optional starting in v4.7)
-//     await client.connect();
-//     // Send a ping to confirm a successful connection
-//     await client.db("admin").command({ ping: 1 });
-//     console.log(
-//       "Pinged your deployment. You successfully connected to MongoDB!"
-//     );
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     await client.close();
-//   }
-// }
-// run().catch(console.dir);
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
 
-mongoose
-  .connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 30000 })
-  .then(() => console.log("Connected to MongoDB!"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+// mongoose
+//   .connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 30000 })
+//   .then(() => console.log("Connected to MongoDB!"))
+//   .catch((err) => console.error("MongoDB connection error:", err));
 
-mongoose.set("debug", true);
+// mongoose.set("debug", true);
 
 const allowedOrigins = [
   "http://localhost:3000",
