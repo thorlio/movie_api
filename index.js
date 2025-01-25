@@ -13,16 +13,9 @@ const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
 
 mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err.message);
-  });
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("Error connecting to MongoDB:", err.message));
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -78,7 +71,7 @@ app.post("/users", async (req, res) => {
       .json({ message: "User created successfully", user: newUser });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal server errorUSERS" });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -105,7 +98,7 @@ app.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Login error: ", error);
-    res.status(500).json({ error: "Internal server errorLOGIN" });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -118,7 +111,7 @@ app.get(
       const users = await Users.find();
       res.status(200).json(users);
     } catch (err) {
-      res.status(500).json({ error: "Internal server errorGETUSERS" });
+      res.status(500).json({ error: "Internal server error" });
     }
   }
 );
