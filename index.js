@@ -78,7 +78,7 @@ app.post("/users", async (req, res) => {
       .json({ message: "User created successfully", user: newUser });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Internal server errorUSERS" });
   }
 });
 
@@ -105,7 +105,7 @@ app.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Login error: ", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Internal server errorLOGIN" });
   }
 });
 
@@ -118,7 +118,7 @@ app.get(
       const users = await Users.find();
       res.status(200).json(users);
     } catch (err) {
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server errorGETUSERS" });
     }
   }
 );
