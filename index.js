@@ -54,7 +54,7 @@ app.post("/users", async (req, res) => {
   try {
     const { Username, Password, Email } = req.body;
 
-    if (!Username || !Password || !Email || !Birthday) {
+    if (!Username || !Password || !Email) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
