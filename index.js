@@ -11,18 +11,9 @@ const cors = require("cors");
 const passport = require("passport");
 const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
-const jwt = require("jsonwebtoken");
-
-// mongoose.connect("mongodb://localhost:27017/myNewDatabase", {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
-// const uri =
-//   "mongodb+srv://thorlio3:Sacramento%408@cluster0.1sglm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(process.env.MONGODB_URI, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -33,26 +24,16 @@ const client = new MongoClient(process.env.MONGODB_URI, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
-    // Ensures that the client will close when you finish/error
     await client.close();
   }
 }
 run().catch(console.dir);
-
-// mongoose
-//   .connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 30000 })
-//   .then(() => console.log("Connected to MongoDB!"))
-//   .catch((err) => console.error("MongoDB connection error:", err));
-
-// mongoose.set("debug", true);
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -101,18 +82,12 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ Username: user.Username }, "your_jwt_secret", {
-      expiresIn: "7d",
-    });
-
     res.status(200).json({
       user: {
         Username: user.Username,
         Email: user.Email,
         Birthday: user.Birthday,
       },
-      token,
     });
   } catch (error) {
     console.error("Login error: ", error);
@@ -150,53 +125,6 @@ app.get(
       .catch((err) => res.status(500).json({ error: err.message }));
   }
 );
-
-// Add new user
-// app.post(
-//   "/users",
-//   [
-//     check("Username", "Username is required").isLength({ min: 5 }),
-//     check(
-//       "Username",
-//       "Username contains non alphanumeric characters - not allowed."
-//     ).isAlphanumeric(),
-//     check("Password", "Password is required").not().isEmpty(),
-//     check("Email", "Email does not appeare to be valid").isEmail(),
-//   ],
-//   async (req, res) => {
-//     let errors = validationResult(req);
-
-//     if (!errors.isEmpty()) {
-//       return res.status(422).json({ errors: errors.array() });
-//     }
-
-//     let hashedPassword = Users.hashPassword(req.body.Password);
-//     await Users.findOne({ Username: req.body.Username })
-//       .then((user) => {
-//         if (user) {
-//           return res.status(400).send(req.body.Username + "already exists");
-//         } else {
-//           Users.create({
-//             Username: req.body.Username,
-//             Password: hashedPassword,
-//             Email: req.body.Email,
-//             Birthday: req.body.Birthday,
-//           })
-//             .then((user) => {
-//               res.status(201).json(user);
-//             })
-//             .catch((error) => {
-//               console.error(error);
-//               res.status(500).send("Error: " + error);
-//             });
-//         }
-//       })
-//       .catch((error) => {
-//         console.error(error);
-//         res.status(500).send("Error: " + error);
-//       });
-//   }
-// );
 
 app.put(
   "/users/:Username",
