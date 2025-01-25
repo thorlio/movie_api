@@ -13,16 +13,9 @@ const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
 
 mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err.message);
-  });
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("Error connecting to MongoDB:", err.message));
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -59,7 +52,7 @@ app.get("/", (req, res) => {
 
 app.post("/users", async (req, res) => {
   try {
-    const { Username, Password, Email } = req.body;
+    const { Username, Password, Email, Birthday } = req.body;
 
     if (!Username || !Password || !Email || !Birthday) {
       return res.status(400).json({ error: "All fields are required" });
@@ -70,7 +63,12 @@ app.post("/users", async (req, res) => {
       return res.status(400).json({ error: "Username already exists" });
     }
 
-    const newUser = new Users({ Username, Password, Email });
+    const newUser = new Users({
+      Username,
+      Password,
+      Email,
+      Birthday,
+    });
     await newUser.save();
 
     res
