@@ -68,6 +68,31 @@ app.get("/", (req, res) => {
   res.status(200).send("Welcome to Flix and Chill App!");
 });
 
+app.post("/users", async (req, res) => {
+  try {
+    const { Username, Password, Email, Birthday } = req.body;
+
+    if (!Username || !Password || !Email || !Birthday) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const existingUser = await Users.findOne({ Username });
+    if (existingUser) {
+      return res.status(400).json({ error: "Username already exists" });
+    }
+
+    const newUser = new Users({ Username, Password, Email, Birthday });
+    await newUser.save();
+
+    res
+      .status(201)
+      .json({ message: "User created successfully", user: newUser });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const { Username, Password } = req.body;
 
