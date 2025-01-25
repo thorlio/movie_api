@@ -13,7 +13,7 @@ const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
 
 mongoose
-  .connect("your-mongodb-uri", {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
