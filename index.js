@@ -52,9 +52,9 @@ app.get("/", (req, res) => {
 
 app.post("/users", async (req, res) => {
   try {
-    const { Username, Password, Email } = req.body;
+    const { Username, Password, Email, Birthday } = req.body;
 
-    if (!Username || !Password || !Email) {
+    if (!Username || !Password || !Email || !Birthday) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -63,7 +63,12 @@ app.post("/users", async (req, res) => {
       return res.status(400).json({ error: "Username already exists" });
     }
 
-    const newUser = new Users({ Username, Password, Email });
+    const newUser = new Users({
+      Username,
+      Password,
+      Email,
+      Birthday,
+    });
     await newUser.save();
 
     res
