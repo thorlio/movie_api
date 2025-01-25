@@ -54,12 +54,14 @@ const bcrypt = require("bcrypt");
 
 app.post("/users", async (req, res) => {
   try {
-    const { Username, Password, Email } = req.body;
+    const { Username, Password, Email, Birthday } = req.body;
 
-    if (!Username || !Password || !Email) {
+    // Validate required fields
+    if (!Username || !Password || !Email || !Birthday) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
+    // Check if the username already exists
     const existingUser = await Users.findOne({ Username });
     if (existingUser) {
       return res.status(400).json({ error: "Username already exists" });
@@ -68,18 +70,23 @@ app.post("/users", async (req, res) => {
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(Password, 10);
 
+    // Create a new user with the hashed password
     const newUser = new Users({
       Username,
       Password: hashedPassword, // Save the hashed password
       Email,
+      Birthday,
     });
+
+    // Save the new user to the database
     await newUser.save();
 
+    // Send a success response
     res
       .status(201)
       .json({ message: "User created successfully", user: newUser });
   } catch (err) {
-    console.error(err);
+    console.error("Error creating user:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
