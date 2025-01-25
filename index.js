@@ -50,11 +50,13 @@ app.get("/", (req, res) => {
   res.status(200).send("Welcome to Flix and Chill App!");
 });
 
+const bcrypt = require("bcrypt");
+
 app.post("/users", async (req, res) => {
   try {
-    const { Username, Password, Email, Birthday } = req.body;
+    const { Username, Password, Email } = req.body;
 
-    if (!Username || !Password || !Email || !Birthday) {
+    if (!Username || !Password || !Email) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -63,11 +65,13 @@ app.post("/users", async (req, res) => {
       return res.status(400).json({ error: "Username already exists" });
     }
 
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
     const newUser = new Users({
       Username,
-      Password,
+      Password: hashedPassword, // Save the hashed password
       Email,
-      Birthday,
     });
     await newUser.save();
 
@@ -98,7 +102,6 @@ app.post("/login", async (req, res) => {
       user: {
         Username: user.Username,
         Email: user.Email,
-        Birthday: user.Birthday,
       },
     });
   } catch (error) {
