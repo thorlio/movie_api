@@ -12,28 +12,17 @@ const passport = require("passport");
 const { check, validationResult } = require("express-validator");
 const port = process.env.PORT || 8080;
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
-
-const client = new MongoClient(process.env.MONGODB_URI, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-});
-
-async function run() {
-  try {
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
-  } finally {
-    await client.close();
-  }
-}
-run().catch(console.dir);
+mongoose
+  .connect("your-mongodb-uri", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err.message);
+  });
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -70,7 +59,7 @@ app.get("/", (req, res) => {
 
 app.post("/users", async (req, res) => {
   try {
-    const { Username, Password, Email, Birthday } = req.body;
+    const { Username, Password, Email } = req.body;
 
     if (!Username || !Password || !Email || !Birthday) {
       return res.status(400).json({ error: "All fields are required" });
@@ -81,7 +70,7 @@ app.post("/users", async (req, res) => {
       return res.status(400).json({ error: "Username already exists" });
     }
 
-    const newUser = new Users({ Username, Password, Email, Birthday });
+    const newUser = new Users({ Username, Password, Email });
     await newUser.save();
 
     res
