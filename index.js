@@ -52,7 +52,7 @@ app.get("/", (req, res) => {
 
 const bcrypt = require("bcrypt");
 
-app.post("/users", async (req, res) => {
+app.post("/register", async (req, res) => {
   try {
     const { Username, Password, Email, Birthday } = req.body;
 
