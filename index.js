@@ -180,8 +180,7 @@ app.put(
 
 //Get all movies
 app.get("/movies", (req, res) => {
-  awaitMovies
-    .find()
+  Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
     })
