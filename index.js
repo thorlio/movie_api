@@ -27,18 +27,30 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("combined"));
 app.use(express.static("public"));
 app.use("/documentation", express.static("public"));
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       console.log("Request Origin:", origin);
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         console.error("Blocked by CORS:", origin);
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//   })
+// );
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log("Request Origin:", origin);
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        console.error("Blocked by CORS:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true,
   })
 );
 
