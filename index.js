@@ -17,30 +17,17 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB:", err.message));
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://flixandchill-frontend.netlify.app",
-];
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("combined"));
 app.use(express.static("public"));
 app.use("/documentation", express.static("public"));
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       console.log("Request Origin:", origin);
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         console.error("Blocked by CORS:", origin);
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     credentials: true,
-//   })
-// );
+
+const allowedOrigins = [
+  "http://localhost:1234",
+  "https://flixandchill-frontend.netlify.app",
+  "https://flixandchill-0e85c940608d.herokuapp.com",
+];
 
 app.use(
   cors({
@@ -51,6 +38,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
+    credentials: true,
   })
 );
 
