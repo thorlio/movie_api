@@ -69,7 +69,7 @@ app.post("/register", async (req, res) => {
 
     const newUser = new Users({
       Username,
-      Password: hashedPassword, // Save the hashed password
+      Password: hashedPassword,
       Email,
       Birthday,
     });
