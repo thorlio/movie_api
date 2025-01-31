@@ -49,6 +49,10 @@ require("./passport.js");
 
 const bcrypt = require("bcrypt");
 
+app.get("/", (req, res) => {
+  res.redirect("/register");
+});
+
 app.post("/register", async (req, res) => {
   try {
     const { Username, Password, Email, Birthday } = req.body;
