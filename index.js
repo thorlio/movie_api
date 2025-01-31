@@ -50,7 +50,7 @@ require("./passport.js");
 const bcrypt = require("bcrypt");
 
 app.get("/", (req, res) => {
-  res.redirect("/register");
+  res.redirect("/login");
 });
 
 app.post("/register", async (req, res) => {
