@@ -27,6 +27,7 @@ const allowedOrigins = [
   "http://localhost:1234",
   "https://679c5647fa45e5dbdb66d143--flixandchill-client.netlify.app",
   "https://flixandchill-0e85c940608d.herokuapp.com",
+  "https://679c5647fa45e5dbdb66d143--flixandchill-client.netlify.app",
 ];
 
 app.use(
