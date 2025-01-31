@@ -25,7 +25,7 @@ app.use("/documentation", express.static("public"));
 
 const allowedOrigins = [
   "http://localhost:1234",
-  "https://flixandchill-client.netlify.app/",
+  "https://679c5647fa45e5dbdb66d143--flixandchill-client.netlify.app",
   "https://flixandchill-0e85c940608d.herokuapp.com",
 ];
 
