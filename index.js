@@ -46,10 +46,6 @@ let auth = require("./auth.js")(app);
 
 require("./passport.js");
 
-app.get("/", (req, res) => {
-  res.status(200).send("Welcome to Flix and Chill App!");
-});
-
 const bcrypt = require("bcrypt");
 
 app.post("/register", async (req, res) => {
@@ -247,14 +243,6 @@ app.delete(
       .catch((err) => res.status(400).json({ error: err.message }));
   }
 );
-
-const path = require("path");
-
-app.use(express.static(path.join(__dirname, "build")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
 
 // Start the server
 app.listen(port, "0.0.0.0", () => {
