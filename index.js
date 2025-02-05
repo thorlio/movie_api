@@ -48,9 +48,7 @@ require("./passport.js");
 
 // Health check endpoint (to check if the API is live)
 app.get("/", (req, res) => {
-  res.send(
-    "Welcome to the myFlix API! Access routes like /register or /movies."
-  );
+  res.send("Welcome to the myFlix API!");
 });
 
 // User registration
