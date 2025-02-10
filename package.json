@@ -13,7 +13,7 @@
   "description": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/movie_api.git"
+    "url": "https://github.com/thorlio3/movie_api.git"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
